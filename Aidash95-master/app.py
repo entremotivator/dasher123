@@ -1,7 +1,19 @@
 import streamlit as st
 from pathlib import Path
+import sys
 
-# Local imports
+# ------------------------
+# Fix import paths
+# ------------------------
+BASE_DIR = Path(__file__).resolve().parent          # Aidash95-master4/Aidash95-master/
+ROOT_DIR = BASE_DIR.parent                          # Aidash95-master4/
+ORIGINAL_REPO_DIR = ROOT_DIR / "Aidash95-master"    # Aidash95-master/
+
+# Add both local and original repo dirs to sys.path
+sys.path.append(str(BASE_DIR))
+sys.path.append(str(ORIGINAL_REPO_DIR))
+
+# Now imports will work regardless of folder structure
 from login_aivaceo import show_login
 from sidebar_enhanced import show_sidebar
 from utils.config import load_config, init_session_state
@@ -23,17 +35,14 @@ st.set_page_config(
 # ------------------------
 def load_css():
     """Load custom CSS for styling the app, with fallback support."""
-    base_dir = Path(__file__).parent
-
-    # Look for enhanced CSS first
-    css_paths = [
-        base_dir / "assets" / "aivaceo_style.css",
-        base_dir.parent / "assets" / "aivaceo_style.css",   # in case assets is one folder up
-        base_dir / "assets" / "style.css",                  # fallback
-        base_dir.parent / "assets" / "style.css",           # fallback (parent dir)
+    css_candidates = [
+        BASE_DIR / "assets" / "aivaceo_style.css",
+        ORIGINAL_REPO_DIR / "assets" / "aivaceo_style.css",
+        BASE_DIR / "assets" / "style.css",
+        ORIGINAL_REPO_DIR / "assets" / "style.css",
     ]
 
-    for css_file in css_paths:
+    for css_file in css_candidates:
         if css_file.exists():
             with open(css_file, encoding="utf-8") as f:
                 st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -88,7 +97,7 @@ def main():
         st.session_state.current_page = "Enhanced Dashboard"
 
     # Resolve page
-    base_dir = Path(__file__).parent
+    base_dir = BASE_DIR
     page_mapping = get_page_mapping(base_dir)
     selected_page = st.session_state.get("current_page")
 

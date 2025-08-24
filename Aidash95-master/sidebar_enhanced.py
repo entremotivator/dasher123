@@ -459,4 +459,3 @@ def render_performance_indicators():
         </div>
     </div>
     """, unsafe_allow_html=True)
-
